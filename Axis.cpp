@@ -59,9 +59,13 @@ Axis::~Axis()
   m_velocityControlTimer = 0;
 }
 
-void Axis::attachServoHal(IServoHal* servoHal)
+void Axis::attachServoHal(AServoHal* servoHal)
 {
   m_servoHal = servoHal;
+  if (0 != m_servoHal)
+  { 
+    m_servoHal->attachAxis(this);
+  }
 }
 
 void Axis::attachTargetReachedNotifier(ITargetReachedNotifier* targetReachedNotifier)
@@ -83,7 +87,13 @@ void Axis::goToTargetAngle(int targetAngle, int velocity)
 {
   m_isTargetReached = false;
   m_targetAngle = targetAngle;
-  m_velocity = velocity;
+  //m_velocity = velocity;
+  m_velocity = 1;
+  if (velocity < 1)
+  {
+    velocity = 1;
+  }
+  m_velocityCtrlIntervalMillis = 1080 / velocity;
 
   // let the control process run automatically, start the recurring timer
   m_velocityControlTimer->start(m_velocityCtrlIntervalMillis);

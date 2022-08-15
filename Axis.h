@@ -9,9 +9,13 @@
 #define SRC_AXIS_H_
 
 class ITargetReachedNotifier;
+class Axis;
 
-class IServoHal
+class AServoHal
 {
+private:
+  Axis* m_axis;
+
 public:
   /**
    * Set a particular angle the Servo shall be set to.
@@ -19,15 +23,18 @@ public:
    */
   virtual void setAngle(int angle) = 0;
 
+  void attachAxis(Axis* axis) { m_axis = axis; }
+  Axis* axis() { return m_axis; }
+
 public:
-  virtual ~IServoHal() { }
+  virtual ~AServoHal() { }
 
 protected:
-  IServoHal() { }
+  AServoHal() { }
 
 private:  // forbidden functions
-  IServoHal(const IServoHal& src);              // copy constructor
-  IServoHal& operator = (const IServoHal& src); // assignment operator
+  AServoHal(const AServoHal& src);              // copy constructor
+  AServoHal& operator = (const AServoHal& src); // assignment operator
 };
 
 class SpinTimer;
@@ -39,7 +46,7 @@ public:
   virtual ~Axis();
 
 public:
-  void attachServoHal(IServoHal* servoHal);
+  void attachServoHal(AServoHal* servoHal);
   void attachTargetReachedNotifier(ITargetReachedNotifier* targetReachedNotifier);
 
   ITargetReachedNotifier* targetReachedNotifier();
@@ -61,7 +68,7 @@ public:
   bool isTargetReached();
 
 private:
-  IServoHal* m_servoHal;
+  AServoHal* m_servoHal;
   char* m_name;
   int m_angleMin;
   int m_angleMax;
