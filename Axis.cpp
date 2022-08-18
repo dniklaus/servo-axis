@@ -150,6 +150,11 @@ int Axis::getAngle()
   return m_angle;
 }
 
+bool Axis::isBusy()
+{
+  return m_velocityControlTimer->isRunning();
+}
+
 bool Axis::isTargetReached()
 {
   bool isTargetReached = m_isTargetReached;

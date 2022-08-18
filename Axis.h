@@ -46,9 +46,25 @@ public:
   virtual ~Axis();
 
 public:
+  /**
+   * @brief Inject concrete Servo HW Abstraction object, which actually will perform the physical action.
+   * 
+   * @param servoHal Concrete Servo HW Abstraction object to be injected.
+   */
   void attachServoHal(AServoHal* servoHal);
+
+  /**
+   * @brief Inject concrete Target Reached Action object, which will perform the particular action when the target was reached.
+   * 
+   * @param targetReachedNotifier Concrete Target Reached Action object to be injected.
+   */
   void attachTargetReachedNotifier(ITargetReachedNotifier* targetReachedNotifier);
 
+  /**
+   * @brief 
+   * 
+   * @return ITargetReachedNotifier* 
+   */
   ITargetReachedNotifier* targetReachedNotifier();
 
   const char* name() const;
@@ -56,15 +72,38 @@ public:
   /**
    * Set a particular angle the Servo shall be set to.
    * @param targetAngle Angle to be set {-90 .. 90}
-   * @param velocity
+   * @param velocity {1..500}
    */
   void goToTargetAngle(int targetAngle, int velocity);
+
+  /**
+   * @brief Stop current action (if active).
+   */
   void stop();
 
   void doAngleControl();
 
+  /**
+   * @brief Get current the angle.
+   * 
+   * @return int Current angle.
+   */
   int getAngle();
 
+  /**
+   * @brief Get status of the axis.
+   * 
+   * @return true Axis is busy (going to target angle).
+   * @return false Axis is idle.
+   */
+  bool isBusy();
+
+  /**
+   * @brief Get Target status of the axis.
+   * 
+   * @return true Axis has reached the ordered target position.
+   * @return false Axis is not (yet) at the ordered target position.
+   */
   bool isTargetReached();
 
 private:
