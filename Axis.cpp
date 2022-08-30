@@ -68,6 +68,11 @@ void Axis::attachServoHal(AServoHal* servoHal)
   }
 }
 
+AServoHal* Axis::servoHal()
+{
+  return m_servoHal;
+}
+
 void Axis::attachTargetReachedNotifier(ITargetReachedNotifier* targetReachedNotifier)
 {
   m_targetReachedNotifier = targetReachedNotifier;
