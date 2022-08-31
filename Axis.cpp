@@ -33,7 +33,7 @@ public:
 
 unsigned long Axis::s_defaultVelocityCtrlIntervalMillis = 50;
 
-Axis::Axis(const char* name)
+Axis::Axis(char* name)
 : m_servoHal(0)
 , m_name(new char[strlen(name)+1])
 , m_angleMin(-90)
@@ -57,6 +57,10 @@ Axis::~Axis()
 
   delete m_velocityControlTimer;
   m_velocityControlTimer = 0;
+  
+  memset(m_name, 0, strlen(m_name)+1);
+  delete [] m_name;
+  m_name = 0;
 }
 
 void Axis::attachServoHal(AServoHal* servoHal)
