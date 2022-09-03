@@ -8,6 +8,7 @@
 #include <string.h>
 #include <SpinTimer.h>
 #include <ITargetReachedNotifier.h>
+#include <AServoHal.h>
 #include <Axis.h>
 
 class VelocityControlTimerAction : public SpinTimerAction
