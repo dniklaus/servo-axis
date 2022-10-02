@@ -43,7 +43,7 @@ protected:
    * @param maxAngleLimit Upper Servo angle limit [°] (Default: 90°).
    * @param minAngleLimit Lower Servo angle limit [°] (Default: -90°).
    */
-  AServoHal(int maxAngleLimit = 90, int minAngleLimit = -90) 
+  AServoHal(int maxAngleLimit = c_defaultMaxAngleLimit, int minAngleLimit = c_defaultMinAngleLimit) 
   : m_maxAngleLimit(maxAngleLimit)
   , m_minAngleLimit(minAngleLimit)
   { }
@@ -52,6 +52,8 @@ public:
   virtual ~AServoHal() { }
 
 private:
+  static const int c_defaultMaxAngleLimit = 90;  /// [°]
+  static const int c_defaultMinAngleLimit = -90;  /// [°]
   int m_maxAngleLimit;  /// Upper Servo angle limit [°]
   int m_minAngleLimit;  /// Lower Servo angle limit [°]
 

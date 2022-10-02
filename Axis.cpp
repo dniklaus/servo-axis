@@ -32,7 +32,8 @@ public:
 
 //-----------------------------------------------------------------------------
 
-unsigned long Axis::s_defaultVelocityCtrlIntervalMillis = 50;
+const unsigned long Axis::c_defaultAngleStepPerIteration      = 1;
+const unsigned long Axis::c_defaultVelocityCtrlIntervalMillis = 1000;
 
 Axis::Axis(char* name)
 : m_servoHal(0)
@@ -40,10 +41,10 @@ Axis::Axis(char* name)
 , m_angleMin(-90)
 , m_angleMax(90)
 , m_angle(0)
-, m_velocity(0)
+, m_angleStepPerIteration(c_defaultAngleStepPerIteration)
 , m_targetAngle(0)
 , m_isTargetReached(false)
-, m_velocityCtrlIntervalMillis(s_defaultVelocityCtrlIntervalMillis)
+, m_velocityCtrlIntervalMillis(c_defaultVelocityCtrlIntervalMillis)
 , m_velocityControlTimer(new SpinTimer(0, new VelocityControlTimerAction(this), SpinTimer::IS_RECURRING))
 , m_targetReachedNotifier(0)
 {
@@ -93,17 +94,16 @@ const char* Axis::name() const
  return m_name;
 }
 
-void Axis::goToTargetAngle(int targetAngle, int velocity)
+void Axis::goToTargetAngle(int targetAngle, int speed)
 {
   m_isTargetReached = false;
   m_targetAngle = targetAngle;
-  //m_velocity = velocity;
-  m_velocity = 1;
-  if (velocity < 1)
+  if (speed < 1)
   {
-    velocity = 1;
+    speed = 1;
   }
-  m_velocityCtrlIntervalMillis = 1080 / velocity;
+  /// @see doAngleControl() gets consecutively called with this interval 
+  m_velocityCtrlIntervalMillis = 1000 / speed;
 
   // let the control process run automatically, start the recurring timer
   m_velocityControlTimer->start(m_velocityCtrlIntervalMillis);
@@ -131,16 +131,12 @@ void Axis::doAngleControl()
   {
     direction = 1;
   }
-  int deltaOfThisIteration = direction * m_velocity;
-  if ((deltaAngle * direction) < m_velocity)
+  int deltaOfThisIteration = direction * m_angleStepPerIteration;
+  if ((deltaAngle * direction) < m_angleStepPerIteration)
   {
     deltaOfThisIteration = deltaAngle;
   }
   m_angle = m_angle + deltaOfThisIteration;
-  if (0 != m_servoHal)
-  {
-    m_servoHal->setAngle(m_angle);
-  }
   if (0 == deltaAngle)
   {
     // Target angle reached, control process to be stopped
@@ -153,11 +149,25 @@ void Axis::doAngleControl()
       m_targetReachedNotifier->notifyTargetReached(m_targetAngle);
     }
   }
+  else if (0 != m_servoHal)
+  {
+    m_servoHal->setAngle(m_angle);
+  }
+
 }
 
 int Axis::getAngle()
 {
   return m_angle;
+}
+
+void Axis::setAngle(int angle)
+{
+  m_angle = angle;
+  if (0 != m_servoHal)
+  {
+    m_servoHal->setAngle(m_angle);
+  }
 }
 
 bool Axis::isBusy()

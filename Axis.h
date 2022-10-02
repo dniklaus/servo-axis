@@ -71,11 +71,11 @@ public:
   const char* name() const;
 
   /**
-   * @brief Set a particular angle the Servo shall be set to.
+   * @brief Set a particular angle the Servo shall be moving to with the particular speed.
    * @param targetAngle Angle to be set {-90 .. 90} [°]
-   * @param velocity {1..500}
+   * @param speed {1..450} [°/s]
    */
-  void goToTargetAngle(int targetAngle, int velocity);
+  void goToTargetAngle(int targetAngle, int speed);
 
   /**
    * @brief Stop current action (if active).
@@ -83,6 +83,10 @@ public:
   void stop();
 
 protected:
+  /**
+   * @brief Set the servo PWM through the AServoHal::setAngle() stepwise increasing to the target position.
+   * details Called consecutively with m_velocityCtrlIntervalMillis
+   */
   void doAngleControl();
 
 public:
@@ -92,6 +96,12 @@ public:
    * @return int Current angle [°].
    */
   int getAngle();
+
+  /**
+   * @brief Set current angle.
+   * @details Go to angle using raw PWM control: servo motion with maximum speed.
+   */
+  void setAngle(int angle);
 
   /**
    * @brief Get status of the axis.
@@ -114,12 +124,13 @@ private:
   char* m_name;
   int m_angleMin;
   int m_angleMax;
-  int m_angle;
-  int m_velocity;
-  int m_targetAngle;  /// current target angle
+  int m_angle;                                  /// current angle position [°]
+  int m_angleStepPerIteration;                  /// angle step per iteration used in doAngleControl() [°]
+  static const unsigned long c_defaultAngleStepPerIteration;         /// [°]
+  int m_targetAngle;                            /// current target angle [°]
   bool m_isTargetReached;
-  unsigned long m_velocityCtrlIntervalMillis;
-  static unsigned long s_defaultVelocityCtrlIntervalMillis;
+  unsigned long m_velocityCtrlIntervalMillis;   /// intervall consecutive doAngleControl() operations are carried out [ms]
+  static const unsigned long c_defaultVelocityCtrlIntervalMillis;    /// [ms]
   SpinTimer* m_velocityControlTimer;
   ITargetReachedNotifier* m_targetReachedNotifier;
 
