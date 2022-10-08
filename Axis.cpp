@@ -94,7 +94,7 @@ const char* Axis::name() const
  return m_name;
 }
 
-void Axis::goToTargetAngle(int targetAngle, int speed)
+void Axis::goToTargetAngle(int targetAngle, unsigned int speed)
 {
   m_isTargetReached = false;
   m_targetAngle = targetAngle;
@@ -103,7 +103,7 @@ void Axis::goToTargetAngle(int targetAngle, int speed)
     speed = 1;
   }
   /// @see doAngleControl() gets consecutively called with this interval 
-  m_velocityCtrlIntervalMillis = 1000 / speed;
+  m_velocityCtrlIntervalMillis = 1000u / speed;
 
   // let the control process run automatically, start the recurring timer
   m_velocityControlTimer->start(m_velocityCtrlIntervalMillis);

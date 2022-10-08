@@ -75,7 +75,7 @@ public:
    * @param targetAngle Angle to be set {-90 .. 90} [°]
    * @param speed {1..450} [°/s]
    */
-  void goToTargetAngle(int targetAngle, int speed);
+  void goToTargetAngle(int targetAngle, unsigned int speed);
 
   /**
    * @brief Stop current action (if active).
