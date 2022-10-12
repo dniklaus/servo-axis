@@ -35,11 +35,10 @@ public:
 const unsigned long Axis::c_defaultAngleStepPerIteration      = 1;
 const unsigned long Axis::c_defaultVelocityCtrlIntervalMillis = 1000;
 
-Axis::Axis(char* name)
+Axis::Axis(char* name, bool isReversePosition /* = false */)
 : m_servoHal(0)
 , m_name(new char[strlen(name)+1])
-, m_angleMin(-90)
-, m_angleMax(90)
+, m_isReversePosition(isReversePosition)
 , m_angle(0)
 , m_angleStepPerIteration(c_defaultAngleStepPerIteration)
 , m_targetAngle(0)
@@ -94,10 +93,20 @@ const char* Axis::name() const
  return m_name;
 }
 
+void Axis::setReversePosition(bool isReversePosition)
+{
+  m_isReversePosition = isReversePosition;
+}
+
+bool Axis::getIsReversePosition()
+{
+  return m_isReversePosition;
+}
+
 void Axis::goToTargetAngle(int targetAngle, unsigned int speed)
 {
   m_isTargetReached = false;
-  m_targetAngle = targetAngle;
+  m_targetAngle = targetAngle * (m_isReversePosition ? -1 : 1);
   if (speed < 1)
   {
     speed = 1;
@@ -146,7 +155,7 @@ void Axis::doAngleControl()
 
     if (0 != m_targetReachedNotifier)
     {
-      m_targetReachedNotifier->notifyTargetReached(m_targetAngle);
+      m_targetReachedNotifier->notifyTargetReached(m_targetAngle * (m_isReversePosition ? -1 : 1));
     }
   }
   else if (0 != m_servoHal)
@@ -158,12 +167,12 @@ void Axis::doAngleControl()
 
 int Axis::getAngle()
 {
-  return m_angle;
+  return m_angle * (m_isReversePosition ? -1 : 1);
 }
 
 void Axis::setAngle(int angle)
 {
-  m_angle = angle;
+  m_angle = angle * (m_isReversePosition ? -1 : 1);
   if (0 != m_servoHal)
   {
     m_servoHal->setAngle(m_angle);

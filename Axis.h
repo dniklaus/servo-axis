@@ -5,8 +5,7 @@
  *      Author: nid
  */
 
-#ifndef SRC_AXIS_H_
-#define SRC_AXIS_H_
+#pragma once
 
 class SpinTimer;
 class AServoHal;
@@ -24,10 +23,10 @@ class Axis
 public:
   /**
    * @brief Construct a new Axis object.
-   * 
    * @param name Axis name.
+   * @param isReversePosition true: Servo is mounted in reverse position (revert angle count direction), default: false (normal)
    */
-  Axis(char* name);
+  Axis(char* name, bool isReversePosition = false);
 
   /**
    * @brief Destroy the Axis object.
@@ -70,6 +69,20 @@ public:
    */
   const char* name() const;
 
+  /**
+   * @brief Set the Reverse Position configuration parameter.
+   * @param isReversePosition true: Servo is mounted in reverse position (revert angle count direction), false: normal
+   */
+  void setReversePosition(bool isReversePosition);
+
+  /**
+   * @brief Get the Is Reverse Position object
+   * @return true Servo is mounted in reverse position (revert angle count direction)
+   * @return false Servo is mounted in normal position
+   */
+  bool getIsReversePosition();
+
+public:
   /**
    * @brief Set a particular angle the Servo shall be moving to with the particular speed.
    * @param targetAngle Angle to be set {-90 .. 90} [°]
@@ -122,8 +135,7 @@ public:
 private:
   AServoHal* m_servoHal;
   char* m_name;
-  int m_angleMin;
-  int m_angleMax;
+  bool m_isReversePosition;                     /// true: Servo is mounted in reverse position (revert angle count direction)
   int m_angle;                                  /// current angle position [°]
   int m_angleStepPerIteration;                  /// angle step per iteration used in doAngleControl() [°]
   static const unsigned long c_defaultAngleStepPerIteration;         /// [°]
@@ -139,5 +151,3 @@ private:  // forbidden functions
   Axis(const Axis& src);              // copy constructor
   Axis& operator = (const Axis& src); // assignment operator
 };
-
-#endif /* SRC_AXIS_H_ */
